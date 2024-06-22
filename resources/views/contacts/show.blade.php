@@ -23,11 +23,6 @@
         </div>
         <div class="flex items-center justify-between">
             <a href="{{ route('contacts.edit', $contact->id) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Edit Contact</a>
-            <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Delete Contact</button>
-            </form>
         </div>
     </div>
 </div>
