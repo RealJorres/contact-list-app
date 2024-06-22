@@ -16,7 +16,7 @@
                             @endif
                             <div>
                                 <h2 class="text-lg font-bold">{{ $contact->name }}</h2>
-                                <p class="text-gray-600">{{ $contact->email }}</p>
+                                <p class="text-gray-600 text-sm">{{ $contact->email }}</p>
                             </div>
                         </div>
                         <p class="text-gray-800 mb-2">{{ $contact->contact_number }}</p>
