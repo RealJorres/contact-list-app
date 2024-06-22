@@ -11,35 +11,33 @@
         @if($contacts->isEmpty())
             <p class="text-gray-600">No contacts available. Add a new contact to get started.</p>
         @else
-            <div class="overflow-x-auto bg-white shadow-md rounded">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Number</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($contacts as $contact)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $contact->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $contact->email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $contact->contact_number }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('contacts.show', $contact->id) }}" class="text-blue-600 hover:text-blue-900">View</a>
-                                    <a href="{{ route('contacts.edit', $contact->id) }}" class="ml-2 text-green-600 hover:text-green-900">Edit</a>
-                                    <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to move this contact to trash?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="ml-2 text-red-600 hover:text-red-900">Move to Trash</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach($contacts as $contact)
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <div class="flex items-center mb-4">
+                            @if ($contact->avatar)
+                                <img src="{{ $contact->avatar ? Storage::url($contact->avatar) : asset('images/default-avatar.png') }}" alt="Avatar" class="w-16 h-16 rounded-full mr-4">
+                            @else
+                                <img src="{{ asset('images/default-avatar.png') }}" alt="Default Avatar" class="w-16 h-16 rounded-full mr-4">
+                            @endif
+                            <div>
+                                <h2 class="text-lg font-bold">{{ $contact->name }}</h2>
+                                <p class="text-gray-600 text-sm">{{ $contact->email }}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-800 mb-2 text-sm">Number: {{ $contact->contact_number }}</p>
+                        <p><i>{{ $contact->notes}}</i></p>
+                        <div class="flex justify-start items-center">
+                            <a href="{{ route('contacts.show', $contact->id) }}" class="text-blue-600 hover:text-blue-900">View</a>
+                            <a href="{{ route('contacts.edit', $contact->id) }}" class="ml-2 text-green-600 hover:text-green-900">Edit</a>
+                            <form action="{{ route('contacts.destroy', $contact->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to move this contact to trash?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="ml-2 text-red-600 hover:text-red-900">Move to Trash</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         @endif
     </div>
