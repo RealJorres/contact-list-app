@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ContactController extends Controller
@@ -60,11 +61,13 @@ class ContactController extends Controller
     // function to update the selected contact
     public function update(Request $request, Contact $contact)
     {
-        $contact = auth()->user()->contacts()->findOrFail($contact);
+        $contact = Contact::where('id', $contact->id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
 
         $validatedData = $request->validate([
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:contacts,email,' . $contact->id,
+            'email' => 'required|string|email|max:255'. $contact->id,
             'contact_number' => 'required',
             'address' => 'nullable',
             'notes' => 'nullable',
@@ -89,14 +92,14 @@ class ContactController extends Controller
     // function to view the trashed contacts
     public function trashed()
     {
-        $contacts = Contact::onlyTrashed()->get();
+        $contacts = Contact::onlyTrashed()->where('user_id', Auth::id())->get();
         return view('contacts.trashed', compact('contacts'));
     }
 
     // function to restore selected contact from trash contacts
     public function restore($id)
     {
-        $contact = Contact::onlyTrashed()->findOrFail($id);
+        $contact = Contact::onlyTrashed()->where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $contact->restore();
         return redirect()->route('contacts-trashed')->with('success', 'Contact has been restored successfully.');
     }
@@ -104,6 +107,9 @@ class ContactController extends Controller
     // function to soft-delete a contact, moving to trash contacts
     public function destroy(Contact $contact)
     {
+        if ($contact->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
         $contact->delete();
         return redirect()->route('contacts.index')->with('success', 'Contact moved to trash successfully.');
     }
@@ -111,8 +117,8 @@ class ContactController extends Controller
     // function to really delete a selected contact
     public function forceDelete($id)
     {
-        $contact = Contact::onlyTrashed()->findOrFail($id);
+        $contact = Contact::onlyTrashed()->where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $contact->forceDelete();
-        return redirect()->route('contacts.trashed')->with('success', 'Contact permanently deleted successfully.');
+        return redirect()->route('contacts-trashed')->with('success', 'Contact permanently deleted successfully.');
     }
 }
